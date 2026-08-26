@@ -1,4 +1,4 @@
-name: Build OlcRTC
+name: Build OlcRTC test
 
 on:
   workflow_dispatch:
@@ -31,14 +31,8 @@ jobs:
         cd olcrtc
         mage build
 
-    - name: List build directory
-      run: |
-        cd olcrtc
-        ls -la build/
-        find build/ -type d
-
     - name: Upload binary
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@latest
       with:
         name: olcrtc-linux-amd64
         path: olcrtc/build/olcrtc-linux-amd64
