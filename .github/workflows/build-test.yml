@@ -1,10 +1,6 @@
 name: Build OlcRTC
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
 
 jobs:
@@ -29,13 +25,6 @@ jobs:
 
     - name: Clone repository
       run: git clone https://github.com/openlibrecommunity/olcrtc --recurse-submodules
-
-    - name: Create swap file
-      run: |
-        sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
-        sudo chmod 600 /swapfile
-        sudo mkswap /swapfile
-        sudo swapon /swapfile
 
     - name: Build OlcRTC
       run: |
