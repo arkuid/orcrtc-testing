@@ -1,0 +1,55 @@
+name: Build OlcRTC
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Install Git
+      run: sudo apt-get update && sudo apt-get install -y git
+
+    - name: Install Go
+      run: |
+        wget https://go.dev/dl/go1.27.0.linux-amd64.tar.gz
+        sudo rm -rf /usr/local/go
+        sudo tar -C /usr/local -xzf go1.27.0.linux-amd64.tar.gz
+        echo "PATH=$PATH:/usr/local/go/bin" >> $GITHUB_ENV
+
+    - name: Install Mage
+      run: |
+        /usr/local/go/bin/go install github.com/magefile/mage@latest
+        echo "PATH=$PATH:$HOME/go/bin" >> $GITHUB_ENV
+
+    - name: Clone repository
+      run: git clone https://github.com/openlibrecommunity/olcrtc --recurse-submodules
+
+    - name: Create swap file
+      run: |
+        sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
+        sudo chmod 600 /swapfile
+        sudo mkswap /swapfile
+        sudo swapon /swapfile
+
+    - name: Build OlcRTC
+      run: |
+        cd olcrtc
+        mage build
+
+    - name: List build directory
+      run: |
+        cd olcrtc
+        ls -la build/
+        find build/ -type d
+
+    - name: Upload binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: olcrtc-linux-amd64
+        path: olcrtc/build/olcrtc-linux-amd64
