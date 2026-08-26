@@ -32,7 +32,7 @@ jobs:
         mage build
 
     - name: Upload binary
-      uses: actions/upload-artifact@latest
+      uses: actions/upload-artifact@main
       with:
         name: olcrtc-linux-amd64
         path: olcrtc/build/olcrtc-linux-amd64
